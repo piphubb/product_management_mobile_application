@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:localstorage/localstorage.dart';
 import 'package:product_management_mobile_application/auth/models/login_request.dart';
 import 'package:product_management_mobile_application/auth/models/login_response.dart';
 import 'package:product_management_mobile_application/auth/presenters/login_presenter.dart';
@@ -149,12 +150,10 @@ class _LoginScreenState extends State<LoginScreen> implements LoginView {
 
   @override
   void onLoginSuccess(LoginResponse res) {
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => HomeScreen(
-            loginResponse: res,
-          ),
-        ));
+    final LocalStorage storage = LocalStorage('user_login_key');
+    storage.setItem("username_key", res.username);
+    storage.setItem("token_key", res.token);
+    storage.setItem("email_key", res.email);
+    Navigator.pushNamedAndRemoveUntil(context, "/", (route)=>false);
   }
 }
