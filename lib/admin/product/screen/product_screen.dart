@@ -10,7 +10,7 @@ class ProductScreen extends StatefulWidget {
   State<ProductScreen> createState() => _ProductScreenState();
 }
 
-class _ProductScreenState extends State<ProductScreen> implements ProductView{
+class _ProductScreenState extends State<ProductScreen> implements ProductView {
   late ProductPresenter productPresenter;
   bool loading = false;
   List<Product> productList = [];
@@ -25,6 +25,11 @@ class _ProductScreenState extends State<ProductScreen> implements ProductView{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.deepPurple,
+        onPressed: (){},
+        child: const Icon(Icons.add, color: Colors.white,),
+      ),
       appBar: AppBar(
         backgroundColor: Colors.deepPurple,
         iconTheme: IconThemeData(color: Colors.white),
@@ -36,27 +41,40 @@ class _ProductScreenState extends State<ProductScreen> implements ProductView{
       body: Container(
         padding: const EdgeInsets.all(5),
         margin: EdgeInsets.all(5),
-        child: loading == true? const CircularProgressIndicator(
-          color: Colors.purple,
-        ): ListView.builder(
-            itemCount: productList.length,
-            itemBuilder: (BuildContext context, index){
-              var product = productList[index];
-              return Container(
-                margin: EdgeInsets.only(top: 5),
-                decoration: BoxDecoration(
-                  color: Colors.deepPurple.withOpacity(.03),
-                  borderRadius: BorderRadius.all(Radius.circular(10))
-                ),
-                child: ListTile(
-                  leading: Image.network("${product.thumbnail ?? ""}", width: 80,height: 80,),
-                  title: Text("${product.title}"),
-                  subtitle: Text("${product.description}",style: TextStyle(color: Colors.black),),
-                  trailing: Icon(Icons.more_horiz),
-                ),
-              );
-            }
-        ),
+        child: loading == true
+            ? const CircularProgressIndicator(
+                color: Colors.purple,
+              )
+            : RefreshIndicator(
+                onRefresh: () async {
+                  productPresenter.getAllProduct();
+                },
+                child: ListView.builder(
+                    itemCount: productList.length,
+                    itemBuilder: (BuildContext context, index) {
+                      var product = productList[index];
+                      return Container(
+                        margin: EdgeInsets.only(top: 5),
+                        decoration: BoxDecoration(
+                            color: Colors.deepPurple.withOpacity(.03),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(10))),
+                        child: ListTile(
+                          leading: Image.network(
+                            "${product.thumbnail ?? ""}",
+                            width: 80,
+                            height: 80,
+                          ),
+                          title: Text("${product.title}"),
+                          subtitle: Text(
+                            "${product.description}",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                          trailing: Icon(Icons.more_horiz),
+                        ),
+                      );
+                    }),
+              ),
       ),
     );
   }
