@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:product_management_mobile_application/admin/product/models/Product.dart';
 import 'package:product_management_mobile_application/admin/product/presenter/product_presenter.dart';
+import 'package:product_management_mobile_application/admin/product/screen/product_detail_screen.dart';
 import 'package:product_management_mobile_application/admin/product/views/product_view.dart';
 
 class ProductScreen extends StatefulWidget {
@@ -27,8 +28,11 @@ class _ProductScreenState extends State<ProductScreen> implements ProductView {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.deepPurple,
-        onPressed: (){},
-        child: const Icon(Icons.add, color: Colors.white,),
+        onPressed: () {},
+        child: const Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
       ),
       appBar: AppBar(
         backgroundColor: Colors.deepPurple,
@@ -70,7 +74,12 @@ class _ProductScreenState extends State<ProductScreen> implements ProductView {
                             "${product.description}",
                             style: TextStyle(color: Colors.black),
                           ),
-                          trailing: Icon(Icons.more_horiz),
+                          trailing: IconButton(
+                            onPressed: () {
+                              productPresenter.getProductById(product.id!);
+                            },
+                            icon: Icon(Icons.more_horiz),
+                          ),
                         ),
                       );
                     }),
@@ -103,5 +112,40 @@ class _ProductScreenState extends State<ProductScreen> implements ProductView {
     setState(() {
       loading = true;
     });
+  }
+
+  @override
+  void onGetProductByIdSuccess(Product product) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ProductDetailScreen(
+            product: product,
+          ),
+        ));
+  }
+
+  static showMessageDialog(BuildContext context) {
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (context) {
+        return const Center(
+          child: CircularProgressIndicator(
+            color: Colors.deepPurple,
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  void onHidingGetProductById() {
+    Navigator.pop(context);
+  }
+
+  @override
+  void onLoadingGetProductById() {
+    showMessageDialog(context);
   }
 }

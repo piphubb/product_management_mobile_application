@@ -57,4 +57,28 @@ class HttpRepositoryImpl extends Api implements HttpRepository {
           code: 500, isSuccess: false, message: e.toString(), data: null);
     }
   }
+
+  @override
+  Future<HttpBaseResponse<Product>> getProductById(int id) async {
+    try {
+      var url = Uri.parse(getProductUrlByIdUrl + id.toString());
+      var res = await httpClient.get(url).timeout(
+            Duration(seconds: 120),
+          );
+      final Map map = jsonDecode(res.body);
+      if (res.statusCode == 200) {
+        return HttpBaseResponse(
+            code: 200,
+            isSuccess: true,
+            message: "Get Product by Id Success",
+            data: Product.fromJson(map));
+      } else {
+        return HttpBaseResponse(
+            code: 400, isSuccess: false, message: "Get Data Error", data: null);
+      }
+    } catch (e) {
+      return HttpBaseResponse(
+          code: 500, isSuccess: false, message: e.toString(), data: null);
+    }
+  }
 }
