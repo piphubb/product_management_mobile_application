@@ -32,10 +32,10 @@ class HttpRepositoryImpl extends Api implements HttpRepository {
   }
 
   @override
-  Future<HttpBaseResponse<List<Product>>> getAllProduct() async {
+  Future<HttpBaseResponse<List<Product>>> getAllProduct(int limit, int page) async {
     List<Product> list = [];
     try {
-      var url = Uri.parse(getProductUrl);
+      var url = Uri.parse(getProductUrl + "?limit=${limit}&skip=${page}");
       var response = await httpClient.get(url);
       final Map<String, dynamic> map = jsonDecode(response.body);
       if (response.statusCode == 200) {

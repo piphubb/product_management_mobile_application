@@ -16,11 +16,46 @@ class _ProductScreenState extends State<ProductScreen> implements ProductView {
   bool loading = false;
   List<Product> productList = [];
 
+  int _currentPage = 1;
+  int _itemsPerPage = 5;
+
+  bool _hasNextPage = true;
+  bool _isFirstLoadRunning = false;
+  bool _isLoadMoreRunning = false;
+
+  void _loadNextPage() async {
+    setState(() {
+      _currentPage +=1;
+    });
+    productPresenter.getAllProduct(_itemsPerPage, _currentPage);
+  }
+
+  void _loadMore() async{
+    if (_hasNextPage == true &&
+        _isFirstLoadRunning == false &&
+        _isLoadMoreRunning == false &&
+        _controller.position.extentAfter < 300){
+      setState(() {
+        _isLoadMoreRunning = true;
+      });
+    }
+  }
+
+  late ScrollController _controller;
+
   @override
   void initState() {
     super.initState();
+    _loadNextPage();
     productPresenter = ProductPresenter(this);
-    productPresenter.getAllProduct();
+    productPresenter.getAllProduct(_itemsPerPage,_currentPage);
+    _controller = ScrollController()..addListener(_loadMore);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _controller.removeListener(_loadMore);
   }
 
   @override
@@ -51,37 +86,51 @@ class _ProductScreenState extends State<ProductScreen> implements ProductView {
               )
             : RefreshIndicator(
                 onRefresh: () async {
-                  productPresenter.getAllProduct();
+                  setState(() {
+                    _currentPage = 1;
+                  });
+                  productPresenter.getAllProduct(_itemsPerPage,_currentPage);
                 },
                 child: ListView.builder(
                     itemCount: productList.length,
                     itemBuilder: (BuildContext context, index) {
-                      var product = productList[index];
-                      return Container(
-                        margin: EdgeInsets.only(top: 5),
-                        decoration: BoxDecoration(
-                            color: Colors.deepPurple.withOpacity(.03),
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(10))),
-                        child: ListTile(
-                          leading: Image.network(
-                            "${product.thumbnail ?? ""}",
-                            width: 80,
-                            height: 80,
+                      if (index < productList.length) {
+                        var product = productList[index];
+                        return Container(
+                          margin: EdgeInsets.only(top: 5),
+                          decoration: BoxDecoration(
+                              color: Colors.deepPurple.withOpacity(.03),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10))),
+                          child: ListTile(
+                            leading: Image.network(
+                              "${product.thumbnail ?? ""}",
+                              width: 80,
+                              height: 80,
+                            ),
+                            title: Text("${product.title}"),
+                            subtitle: Text(
+                              "${product.description}",
+                              style: TextStyle(color: Colors.black),
+                            ),
+                            trailing: IconButton(
+                              onPressed: () {
+                                productPresenter.getProductById(product.id!);
+                              },
+                              icon: Icon(Icons.more_horiz),
+                            ),
                           ),
-                          title: Text("${product.title}"),
-                          subtitle: Text(
-                            "${product.description}",
-                            style: TextStyle(color: Colors.black),
+                        );
+                      } else if (index == productList.length) {
+                        return const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 16.0),
+                          child: Center(
+                            child: CircularProgressIndicator(),
                           ),
-                          trailing: IconButton(
-                            onPressed: () {
-                              productPresenter.getProductById(product.id!);
-                            },
-                            icon: Icon(Icons.more_horiz),
-                          ),
-                        ),
-                      );
+                        );
+                      } else {
+                        return null;
+                      }
                     }),
               ),
       ),
@@ -96,7 +145,11 @@ class _ProductScreenState extends State<ProductScreen> implements ProductView {
   @override
   void onGetAllProductSuccess(List<Product> list) {
     setState(() {
-      productList = list;
+      if(_currentPage == 1){
+        productList = list;
+      }else{
+        productList.addAll(list);
+      }
     });
   }
 

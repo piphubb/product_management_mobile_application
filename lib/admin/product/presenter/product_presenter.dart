@@ -10,9 +10,9 @@ class ProductPresenter{
     httpRepository = HttpServiceInjection().httpRepository;
   }
 
-  void getAllProduct(){
+  void getAllProduct(int limit, int page){
     view.onLoading();
-    httpRepository.getAllProduct().then((value){
+    httpRepository.getAllProduct(limit, page).then((value){
       view.onHiding();
       if(value.isSuccess == true){
         view.onGetAllProductSuccess(value.data!);

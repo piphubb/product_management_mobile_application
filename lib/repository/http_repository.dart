@@ -5,6 +5,6 @@ import 'package:product_management_mobile_application/models/http_base_response.
 
 abstract interface class HttpRepository{
   Future<HttpBaseResponse<LoginResponse>> login(LoginRequest req);
-  Future<HttpBaseResponse<List<Product>>> getAllProduct();
+  Future<HttpBaseResponse<List<Product>>> getAllProduct(int limit,int page);
   Future<HttpBaseResponse<Product>> getProductById(int id);
 }
