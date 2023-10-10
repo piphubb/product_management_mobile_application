@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
-import 'package:product_management_mobile_application/auth/models/login_request.dart';
-import 'package:product_management_mobile_application/auth/models/login_response.dart';
+import 'package:product_management_mobile_application/auth/models/login_req.dart';
+import 'package:product_management_mobile_application/auth/models/login_res.dart';
 import 'package:product_management_mobile_application/auth/presenters/login_presenter.dart';
 import 'package:product_management_mobile_application/auth/views/login_view.dart';
-import 'package:product_management_mobile_application/home_screen/home_screen.dart';
+
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -24,8 +24,8 @@ class _LoginScreenState extends State<LoginScreen> implements LoginView {
   void initState() {
     super.initState();
     presenter = LoginPresenter(this);
-    _usernameController.text = "kminchelle";
-    _passwordController.text = "0lelplR";
+    _usernameController.text = "08851337777";
+    _passwordController.text = "123456";
   }
 
   @override
@@ -108,8 +108,8 @@ class _LoginScreenState extends State<LoginScreen> implements LoginView {
           if (_keyForm.currentState!.validate()) {
             print("Username : ${_usernameController.text}");
             print("Password : ${_passwordController.text}");
-            LoginRequest req = LoginRequest();
-            req.username = _usernameController.text;
+            LoginReq req = LoginReq();
+            req.phoneNumber = _usernameController.text;
             req.password = _passwordController.text;
             presenter.login(req);
           }
@@ -151,11 +151,10 @@ class _LoginScreenState extends State<LoginScreen> implements LoginView {
   }
 
   @override
-  void onLoginSuccess(LoginResponse res) {
+  void onLoginSuccess(LoginRes res) {
     final LocalStorage storage = LocalStorage('user_login_key');
-    storage.setItem("username_key", res.username);
-    storage.setItem("token_key", res.token);
-    storage.setItem("email_key", res.email);
+    storage.setItem("accessToken", res.accessToken);
+    storage.setItem("refreshToken", res.refreshToken);
     Navigator.pushNamedAndRemoveUntil(context, "/", (route)=>false);
   }
 }

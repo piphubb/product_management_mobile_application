@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
       home: FutureBuilder(
         future: storage.ready,
         builder: (BuildContext context, snapshot){
-          var username = storage.getItem("username_key");
+          var username = storage.getItem("accessToken");
           if(username != null){
             return HomeScreen();
           }

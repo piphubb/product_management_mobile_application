@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:product_management_mobile_application/admin/product/screen/product_screen.dart';
+import 'package:product_management_mobile_application/admin/product/screen/unit_type_screen.dart';
 import 'package:product_management_mobile_application/auth/models/login_response.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -21,6 +22,17 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             Container(
               height: 250,
+            ),
+            ListTile(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => UnitTypeScreen()),
+                );
+              },
+              leading: Icon(Icons.list_alt_outlined),
+              title: Text("Unit Type"),
+              trailing: Icon(Icons.navigate_next_rounded),
             ),
             ListTile(
               onTap: () {
